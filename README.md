@@ -10,14 +10,14 @@ and begin overwriting files creating a ring buffer.
 
 ## Installation
 
-Copy the `packet-capture@.service` file to `/usr/lib/systemd/system/` and reload
-systemd by running `systemctl daemon-reload`. A packet capture can then be
-started on a specific interface by running `systemctl start
-packet-capture@<interface>`. The pcap files will begin to be written to
-`/var/tmp` in the format `pcap-<interface>-<file number>`. These will always
-start at file number 0 so restarting this will immediately begin by overwriting
-the first file. Systemd can also start this at boot time by running `systemctl
-enable packet-capture@<interface>`.
+1.Copy the `packet-capture@.service` file to `/usr/lib/systemd/system/` and reload
+systemd by running `systemctl daemon-reload`.
+2.A packet capture can then be started on a specific interface by running `systemctl start packet-capture@<interface>`.
+3.The pcap files will begin to be written to `/var/log/tcpdum` in the format `<interface>-<Timestamp>-<file number>`.
+4.These will always start at file number 0 so restarting this will immediately begin by overwriting
+the first file.
+
+5.Systemd can also start this at boot time by running `systemctl enable packet-capture@<interface>`.
 
 ## Configuration
 
@@ -25,14 +25,16 @@ Configuration is done in the service file itself with the `Environment=`
 directive. The following variables can be set:
 
 ```
-# Max file size
+# Max file size (in milion of MB)
 Environment="FILESIZE=25"
-# Max number of files
-Environment="FILELIMIT=10"
 # BPF filter
 Environment="FILTER="
 # Additional arguments to tcpdump
 Environment="ADDITIONAL_ARGS="
+# Capture directory
+Environment="CAPTURE_DIR=/var/log/tcpdumpd"
+# Tempo di campionamento
+Environment="TIMER=10"
 ```
 
 After editing the service file systemd will need to be reloaded by running
