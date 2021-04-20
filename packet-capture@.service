@@ -5,21 +5,20 @@ After=network.target
 
 [Service]
 Type=simple
+ExecStartPre=/bin/mkdir -p /var/log/tcpdumpd/
 
-# Max file size
+# Max file size (in milion of MB)
 Environment="FILESIZE=25"
-# Max number of files
-Environment="FILELIMIT=10"
 # BPF filter
 Environment="FILTER="
 # Additional arguments to tcpdump
 Environment="ADDITIONAL_ARGS="
-# Filename
-Environment="FILENAME=pcap"
 # Capture directory
-Environment="CAPTURE_DIR=/var/tmp"
+Environment="CAPTURE_DIR=/var/log/tcpdumpd"
+# Tempo di campionamento
+Environment="TIMER=10"
 
-ExecStart=/usr/sbin/tcpdump -i %i -w ${CAPTURE_DIR}/${FILENAME}-%i- -C ${FILESIZE} -W ${FILELIMIT} -K -n ${ADDITIONAL_ARGS} ${FILTER}
+ExecStart=/usr/sbin/tcpdump -i %i -w ${CAPTURE_DIR}/%i_%%Y-%%m-%%d__%%H:%%M:%%S.pcap -C ${FILESIZE} -G ${TIMER} -K -n ${ADDITIONAL_ARGS} ${FILTER}
 
 [Install]
 WantedBy=multi-user.target
